@@ -117,7 +117,8 @@ export class StrBinding {
         let expected = view;
         for (const change of changes) expected = applyChange(expected, change);
         const editor = this.editor;
-        if (expected.length === editor.getLength() && expected === editor.get()) {
+        const areEqual = (editor.getLength ? expected.length === editor.getLength() : true) && expected === editor.get();
+        if (areEqual) {
           const str = this.str;
           for (const change of changes) {
             const [position, remove, insert] = change;
@@ -149,7 +150,7 @@ export class StrBinding {
         try {
           const view = this.str.view();
           const editor = this.editor;
-          const needsSync = view.length !== editor.getLength() || view !== editor.get();
+          const needsSync = (editor.getLength ? view.length !== editor.getLength() : false) || view !== editor.get();
           if (needsSync) this.syncFromEditor();
         } catch {}
         if (this._p) this.pollChanges();

@@ -46,7 +46,7 @@ export interface EditorFacade {
    * but it is possible to implement length retrieval in a more efficient way
    * here.
    */
-  getLength(): number;
+  getLength?(): number;
 
   /**
    * Overwrites the editor content with the given text.
