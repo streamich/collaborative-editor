@@ -31,10 +31,10 @@ export interface EditorFacade {
    * of characters removed, and `insert` is the string inserted.
    * 
    * If a change happened, but it is too complex or impossible to represent by
-   * the `SimpleChange` tuple, the `null` value can be emitted instead. For the
+   * the `SimpleChange` tuple, the `void` value can be emitted instead. For the
    * most basic implementation, one can always emit `null` on every change.
    */
-  onchange?: (change: SimpleChange | null) => void;
+  onchange?: (change: SimpleChange | void) => void;
 
   /**
    * Returns the text content of the editor.

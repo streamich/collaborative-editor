@@ -22,10 +22,11 @@ const editor: EditorFacade = {
 };
 
 const str = model.api.str(['path', 'to', 'string']);
-const unbind = new StrBinding(str, editor);
+const binding = new StrBinding(str, editor);
+binding.bind();
 
 // When done, unbind the binding.
-unbind();
+binding.unbind();
 ```
 
 

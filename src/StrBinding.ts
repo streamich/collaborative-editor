@@ -110,7 +110,7 @@ export class StrBinding {
     }
   }
 
-  private readonly onchange = (change: SimpleChange | null) => {
+  private readonly onchange = (change: SimpleChange | void) => {
     this.race(() => {
       if (change) {
         const view = this.str.view();
@@ -164,6 +164,7 @@ export class StrBinding {
   private _s: (() => void) | null = null;
 
   public readonly bind = (polling?: boolean) => {
+    this.syncFromModel();
     const editor = this.editor;
     editor.onchange = this.onchange;
     editor.onselection = () => this.saveSelection();
