@@ -1,7 +1,7 @@
 import type {EditorFacade, SimpleChange} from './types';
 
 export class EmptyEditor implements EditorFacade {
-  public onchange?: (change: SimpleChange | void) => void;
+  public onchange?: (change: SimpleChange[] | void) => void;
   public onselection?: () => void;
 
   constructor(protected readonly input: HTMLInputElement | HTMLTextAreaElement) {
@@ -16,7 +16,7 @@ export class EmptyEditor implements EditorFacade {
     throw new Error('Not implemented');
   }
 
-  public set(text: string): void {
+  public set(): void {
     throw new Error('Not implemented');
   }
 
@@ -24,7 +24,7 @@ export class EmptyEditor implements EditorFacade {
     throw new Error('Not implemented');
   }
 
-  public setSelection(start: number, end: number, direction: -1 | 0 | 1): void {
+  public setSelection(): void {
     throw new Error('Not implemented');
   }
 

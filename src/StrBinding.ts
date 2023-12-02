@@ -110,17 +110,20 @@ export class StrBinding {
     }
   }
 
-  private readonly onchange = (change: SimpleChange | void) => {
+  private readonly onchange = (changes: SimpleChange[] | void) => {
     this.race(() => {
-      if (change) {
+      if (changes) {
         const view = this.str.view();
-        const expected = applyChange(view, change);
+        let expected = view;
+        for (const change of changes) expected = applyChange(expected, change);
         const editor = this.editor;
         if (expected.length === editor.getLength() && expected === editor.get()) {
           const str = this.str;
-          const [position, remove, insert] = change;
-          if (remove) str.del(position, remove);
-          if (insert) str.ins(position, insert);
+          for (const change of changes) {
+            const [position, remove, insert] = change;
+            if (remove) str.del(position, remove);
+            if (insert) str.ins(position, insert);
+          }
           return;
         }
       }
