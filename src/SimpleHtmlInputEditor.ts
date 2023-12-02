@@ -1,7 +1,7 @@
 import type {EditorFacade, SimpleChange} from './types';
 
 export class SimpleHtmlInputEditor implements EditorFacade {
-  public onchange?: (change: SimpleChange | void) => void;
+  public onchange?: (change: SimpleChange[] | void) => void;
   public onselection?: () => void;
 
   constructor(protected readonly input: HTMLInputElement | HTMLTextAreaElement) {
