@@ -62,9 +62,11 @@ export class StrBinding {
     this.race(() => {
       this.syncFromModel();
       const {editor, selection, str} = this;
-      const start = selection.startId ? str.findPos(selection.startId) + 1 : -1;
-      const end = selection.endId ? str.findPos(selection.endId) + 1 : -1;
-      editor.setSelection(start, end, selection.dir);
+      if (editor.setSelection) {
+        const start = selection.startId ? str.findPos(selection.startId) + 1 : -1;
+        const end = selection.endId ? str.findPos(selection.endId) + 1 : -1;
+        editor.setSelection(start, end, selection.dir);
+      }
       this.saveSelection();
     });
   };
@@ -179,6 +181,6 @@ export class StrBinding {
   public readonly unbind = () => {
     this.stopPolling();
     this._s?.();
-    this.editor.dispose();
+    this.editor.dispose?.();
   };
 }

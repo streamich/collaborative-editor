@@ -25,6 +25,17 @@ export interface EditorFacade {
   // ----------------------------------------------------------------- Contents
 
   /**
+   * Returns the text content of the editor.
+   */
+  get(): string;
+
+  /**
+   * Overwrites the editor content with the given text.
+   * @param text Raw text to set.
+   */
+  set(text: string): void;
+
+  /**
    * Emits a change event when the text changes. The event is emitted with
    * a `SimpleChange` tuple, which is a tuple of `[position, remove, insert]`,
    * where `position` is the position of the change, `remove` is the number
@@ -37,22 +48,11 @@ export interface EditorFacade {
   onchange?: (change: SimpleChange[] | void) => void;
 
   /**
-   * Returns the text content of the editor.
-   */
-  get(): string;
-
-  /**
    * Length of text. Should return the same result as `.get().length`,
    * but it is possible to implement length retrieval in a more efficient way
    * here.
    */
   getLength?(): number;
-
-  /**
-   * Overwrites the editor content with the given text.
-   * @param text Raw text to set.
-   */
-  set(text: string): void;
 
   // ---------------------------------------------------------------- Selection
 
@@ -69,7 +69,7 @@ export interface EditorFacade {
   /**
    * Sets the editor selection.
    */
-  setSelection(start: number, end: number, direction: -1 | 0 | 1): void;
+  setSelection?(start: number, end: number, direction: -1 | 0 | 1): void;
 
   /**
    * This property does not have to be set, it is set by the binding once it is
@@ -84,5 +84,5 @@ export interface EditorFacade {
    * Binding calls this method when it is no longer needed. This method should
    * clean up any allocated resources, such as event listeners.
    */
-  dispose(): void;
+  dispose?(): void;
 }
