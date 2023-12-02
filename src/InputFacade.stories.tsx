@@ -1,10 +1,10 @@
 import * as React from 'react';
 import {Model} from 'json-joy/es2020/json-crdt';
 import {StrBinding} from './StrBinding';
-import {SimpleHtmlInputEditor} from './SimpleHtmlInputEditor';
+import {InputFacade0, InputFacade1, InputFacade2} from './InputFacade';
 import type {Meta, StoryObj} from '@storybook/react';
 
-const Demo: React.FC<{textarea: boolean}> = ({textarea}) => {
+const Demo: React.FC<{textarea: boolean, Facade: any}> = ({textarea, Facade}) => {
   const inputRef = React.useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   const [model, clone] = React.useMemo(() => {
     const model = Model.withLogicalClock();
@@ -15,7 +15,7 @@ const Demo: React.FC<{textarea: boolean}> = ({textarea}) => {
   React.useEffect(() => {
     if (!inputRef.current) return;
     const input = inputRef.current;
-    const editor = new SimpleHtmlInputEditor(input);
+    const editor = new Facade(input);
     const binding = new StrBinding(model.api.str(['text']), editor);
     binding.bind(true);
     return () => {
@@ -90,19 +90,27 @@ const Demo: React.FC<{textarea: boolean}> = ({textarea}) => {
 };
 
 const meta: Meta<typeof Text> = {
-  title: 'StrBinding',
+  title: 'InputFacade',
   component: Demo as any,
   argTypes: {},
 };
 
 export default meta;
 
-export const Input: StoryObj<typeof meta> = {
-  args: {},
+export const Facade0: StoryObj<typeof meta> = {
+  args: {
+    Facade: InputFacade0,
+  } as any,
 };
 
-export const Textarea: StoryObj<typeof meta> = {
+export const Facade1: StoryObj<typeof meta> = {
   args: {
-    textarea: true,
+    Facade: InputFacade1,
+  } as any,
+};
+
+export const Facade2: StoryObj<typeof meta> = {
+  args: {
+    Facade: InputFacade2,
   } as any,
 };
