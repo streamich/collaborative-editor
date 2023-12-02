@@ -119,7 +119,8 @@ export class StrBinding {
         let expected = view;
         for (const change of changes) expected = applyChange(expected, change);
         const editor = this.editor;
-        const areEqual = (editor.getLength ? expected.length === editor.getLength() : true) && expected === editor.get();
+        const areEqual =
+          (editor.getLength ? expected.length === editor.getLength() : true) && expected === editor.get();
         if (areEqual) {
           const str = this.str;
           for (const change of changes) {
