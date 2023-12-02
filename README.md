@@ -32,4 +32,5 @@ binding.unbind();
 
 ## Preview
 
-See [demo](https://streamich.github.io/collaborative-editor).
+- See [demo](https://streamich.github.io/collaborative-editor).
+- See sample [editor implementation](./src/SimpleHtmlInputEditor.ts) on top of `<input>` and `<textarea>` elements.
