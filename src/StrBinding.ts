@@ -31,7 +31,7 @@ export class StrBinding {
 
   protected saveSelection() {
     const {str, editor, selection} = this;
-    const [selectionStart, selectionEnd, selectionDirection] = editor.getSelection() || [-1, -1, 0];
+    const [selectionStart, selectionEnd, selectionDirection] = editor.getSelection?.() || [-1, -1, 0];
     const {start, end} = selection;
     const now = Date.now();
     const tick = str.api.model.tick;

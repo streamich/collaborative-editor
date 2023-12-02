@@ -64,7 +64,7 @@ export interface EditorFacade {
   /**
    * Returns the current selection.
    */
-  getSelection(): EditorSelection | null;
+  getSelection?(): EditorSelection | null;
 
   /**
    * Sets the editor selection.
