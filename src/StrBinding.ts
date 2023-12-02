@@ -19,7 +19,7 @@ export class StrBinding {
     protected readonly str: StrApi,
     protected readonly editor: EditorFacade,
   ) {
-     editor.selection = this.selection = new Selection();
+    editor.selection = this.selection = new Selection();
   }
 
   // ---------------------------------------------------------------- Selection

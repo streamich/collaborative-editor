@@ -1,4 +1,4 @@
-import type {EditorFacade, SimpleChange} from "./types";
+import type {EditorFacade, SimpleChange} from './types';
 
 export class SimpleHtmlInputEditor implements EditorFacade {
   public onchange?: (change: SimpleChange | void) => void;
@@ -24,7 +24,7 @@ export class SimpleHtmlInputEditor implements EditorFacade {
   public getSelection(): [number, number, -1 | 0 | 1] | null {
     const input = this.input;
     const {selectionStart, selectionEnd, selectionDirection} = input;
-    const direction = selectionDirection === "backward" ? -1 : selectionDirection === "forward" ? 1 : 0;
+    const direction = selectionDirection === 'backward' ? -1 : selectionDirection === 'forward' ? 1 : 0;
     return [
       typeof selectionStart === 'number' ? selectionStart : -1,
       typeof selectionEnd === 'number' ? selectionEnd : -1,
@@ -36,7 +36,7 @@ export class SimpleHtmlInputEditor implements EditorFacade {
     const input = this.input;
     input.selectionStart = start > -1 ? start : null;
     input.selectionEnd = end > -1 ? end : null;
-    input.selectionDirection = direction === -1 ? "backward" : direction === 1 ? "forward" : "none";
+    input.selectionDirection = direction === -1 ? 'backward' : direction === 1 ? 'forward' : 'none';
   }
 
   private readonly onInput = () => {

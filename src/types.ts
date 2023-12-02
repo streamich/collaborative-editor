@@ -1,4 +1,4 @@
-import type {Selection} from "./Selection";
+import type {Selection} from './Selection';
 
 /**
  * Represents a single change in the editor. It is a 3-tuple of `[position,
@@ -29,7 +29,7 @@ export interface EditorFacade {
    * a `SimpleChange` tuple, which is a tuple of `[position, remove, insert]`,
    * where `position` is the position of the change, `remove` is the number
    * of characters removed, and `insert` is the string inserted.
-   * 
+   *
    * If a change happened, but it is too complex or impossible to represent by
    * the `SimpleChange` tuple, the `void` value can be emitted instead. For the
    * most basic implementation, one can always emit `null` on every change.
@@ -54,7 +54,6 @@ export interface EditorFacade {
    */
   set(text: string): void;
 
-
   // ---------------------------------------------------------------- Selection
 
   /**
@@ -78,7 +77,6 @@ export interface EditorFacade {
    * `SimpleChange` events.
    */
   selection?: Selection;
-
 
   // ---------------------------------------------------------------- Lifecycle
 
