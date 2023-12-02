@@ -1,4 +1,4 @@
-import {ITimestampStruct} from 'json-joy/es2020/json-crdt-patch/clock';
+import type {ITimestampStruct} from 'json-joy/es2020/json-crdt-patch/clock';
 
 export class Selection {
   /** Local selection start. */

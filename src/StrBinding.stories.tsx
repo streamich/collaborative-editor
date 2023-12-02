@@ -1,8 +1,8 @@
 import * as React from 'react';
 import {Model} from 'json-joy/es2020/json-crdt';
 import {StrBinding} from './StrBinding';
-import type {Meta, StoryObj} from '@storybook/react';
 import {SimpleHtmlInputEditor} from './SimpleHtmlInputEditor';
+import type {Meta, StoryObj} from '@storybook/react';
 
 const Demo: React.FC<{textarea: boolean}> = ({textarea}) => {
   const inputRef = React.useRef<HTMLInputElement | HTMLTextAreaElement>(null);
