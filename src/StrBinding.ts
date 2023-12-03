@@ -12,6 +12,13 @@ const enum DIFF_CHANGE_TYPE {
 }
 
 export class StrBinding {
+  public static bind = (str: StrApi, editor: EditorFacade, polling?: boolean) => {
+    const binding = new StrBinding(str, editor);
+    binding.syncFromModel();
+    binding.bind(polling);
+    return binding.unbind;
+  };
+
   protected readonly selection: Selection;
   protected readonly race = invokeFirstOnly();
 
