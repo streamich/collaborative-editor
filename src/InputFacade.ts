@@ -1,24 +1,44 @@
 import type {EditorFacade, SimpleChange} from './types';
 
-export class SimpleHtmlInputEditor implements EditorFacade {
-  public onchange?: (change: SimpleChange[] | void) => void;
-  public onselection?: () => void;
-
-  constructor(protected readonly input: HTMLInputElement | HTMLTextAreaElement) {
-    input.addEventListener('input', this.onInput as any);
-    document.addEventListener('selectionchange', this.onSelectionChange);
-  }
+export class InputFacade0 implements EditorFacade {
+  constructor(protected readonly input: HTMLInputElement | HTMLTextAreaElement) {}
 
   public get(): string {
     return this.input.value;
+  }
+
+  public set(text: string): void {
+    this.input.value = text;
+  }
+}
+
+export class InputFacade1 extends InputFacade0 {
+  public onchange?: (change: SimpleChange[] | void) => void;
+
+  constructor(protected readonly input: HTMLInputElement | HTMLTextAreaElement) {
+    super(input);
+    input.addEventListener('input', this.onInput as any);
   }
 
   public getLength(): number {
     return this.input.value.length;
   }
 
-  public set(text: string): void {
-    this.input.value = text;
+  private readonly onInput = () => {
+    this.onchange?.();
+  };
+
+  public dispose(): void {
+    this.input.removeEventListener('input', this.onInput as any);
+  }
+}
+
+export class InputFacade2 extends InputFacade1 {
+  public onselection?: () => void;
+
+  constructor(protected readonly input: HTMLInputElement | HTMLTextAreaElement) {
+    super(input);
+    document.addEventListener('selectionchange', this.onSelectionChange);
   }
 
   public getSelection(): [number, number, -1 | 0 | 1] | null {
@@ -39,16 +59,12 @@ export class SimpleHtmlInputEditor implements EditorFacade {
     input.selectionDirection = direction === -1 ? 'backward' : direction === 1 ? 'forward' : 'none';
   }
 
-  private readonly onInput = () => {
-    this.onchange!();
-  };
-
   private readonly onSelectionChange = () => {
     this.onselection!();
   };
 
   public dispose(): void {
-    this.input.removeEventListener('input', this.onInput as any);
+    super.dispose();
     document.removeEventListener('selectionchange', this.onSelectionChange);
   }
 }

@@ -25,6 +25,33 @@ export interface EditorFacade {
   // ----------------------------------------------------------------- Contents
 
   /**
+   * Returns the text content of the editor.
+   */
+  get(): string;
+
+  /**
+   * Overwrites the editor content with the given text.
+   * @param text Raw text to set.
+   */
+  set(text: string): void;
+
+  /**
+   * Inserts text at the given position. When implemented, this method is used
+   * for granular model-to-editor sync of remote changes.
+   * @param position Position to insert text at.
+   * @param text Raw text to insert.
+   */
+  ins?(position: number, text: string): void;
+
+  /**
+   * Deletes text at the given position. When implemented, this method is used
+   * for granular model-to-editor sync of remote changes.
+   * @param position Position to delete text at.
+   * @param length Number of characters to delete.
+   */
+  del?(position: number, length: number): void;
+
+  /**
    * Emits a change event when the text changes. The event is emitted with
    * a `SimpleChange` tuple, which is a tuple of `[position, remove, insert]`,
    * where `position` is the position of the change, `remove` is the number
@@ -37,22 +64,11 @@ export interface EditorFacade {
   onchange?: (change: SimpleChange[] | void) => void;
 
   /**
-   * Returns the text content of the editor.
-   */
-  get(): string;
-
-  /**
    * Length of text. Should return the same result as `.get().length`,
    * but it is possible to implement length retrieval in a more efficient way
    * here.
    */
-  getLength(): number;
-
-  /**
-   * Overwrites the editor content with the given text.
-   * @param text Raw text to set.
-   */
-  set(text: string): void;
+  getLength?(): number;
 
   // ---------------------------------------------------------------- Selection
 
@@ -64,12 +80,12 @@ export interface EditorFacade {
   /**
    * Returns the current selection.
    */
-  getSelection(): EditorSelection | null;
+  getSelection?(): EditorSelection | null;
 
   /**
    * Sets the editor selection.
    */
-  setSelection(start: number, end: number, direction: -1 | 0 | 1): void;
+  setSelection?(start: number, end: number, direction: -1 | 0 | 1): void;
 
   /**
    * This property does not have to be set, it is set by the binding once it is
@@ -84,5 +100,5 @@ export interface EditorFacade {
    * Binding calls this method when it is no longer needed. This method should
    * clean up any allocated resources, such as event listeners.
    */
-  dispose(): void;
+  dispose?(): void;
 }

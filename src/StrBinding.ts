@@ -12,6 +12,13 @@ const enum DIFF_CHANGE_TYPE {
 }
 
 export class StrBinding {
+  public static bind = (str: StrApi, editor: EditorFacade, polling?: boolean) => {
+    const binding = new StrBinding(str, editor);
+    binding.syncFromModel();
+    binding.bind(polling);
+    return binding.unbind;
+  };
+
   protected readonly selection: Selection;
   protected readonly race = invokeFirstOnly();
 
@@ -24,14 +31,9 @@ export class StrBinding {
 
   // ---------------------------------------------------------------- Selection
 
-  // We constantly keep track of the selection state, which is stored in the
-  // Selection class. The selection state is updated on every input event and
-  // selectionchange event, and in other cases. The selection state, keeps track
-  // of, both, the local and remote selection state.
-
   protected saveSelection() {
     const {str, editor, selection} = this;
-    const [selectionStart, selectionEnd, selectionDirection] = editor.getSelection() || [-1, -1, 0];
+    const [selectionStart, selectionEnd, selectionDirection] = editor.getSelection?.() || [-1, -1, 0];
     const {start, end} = selection;
     const now = Date.now();
     const tick = str.api.model.tick;
@@ -49,35 +51,49 @@ export class StrBinding {
 
   // ----------------------------------------------------- Model-to-Editor sync
 
-  // We can always sync the model to the editor. However, it is done only in
-  // two cases: (1) on initial binding, and (2) when the model receives remote
-  // changes. The latter is done by listening to the changes event on the str
-  // instance.
-
   public syncFromModel() {
-    this.editor.set(this.str.view());
+    const {editor, str} = this;
+    if (editor.ins && editor.del) {
+      const view = str.view();
+      const editorText = editor.get();
+      if (view === editorText) return;
+      const changes = diff(editorText, view);
+      const changeLen = changes.length;
+      let pos: number = 0;
+      for (let i = 0; i < changeLen; i++) {
+        const change = changes[i];
+        const [type, text] = change;
+        const len = text.length;
+        switch (type) {
+          case DIFF_CHANGE_TYPE.DELETE:
+            editor.del(pos, len);
+            break;
+          case DIFF_CHANGE_TYPE.EQUAL:
+            pos += len;
+            break;
+          case DIFF_CHANGE_TYPE.INSERT:
+            editor.ins(pos, text);
+            pos += len;
+            break;
+        }
+      }
+    } else editor.set(str.view());
   }
 
   protected readonly onModelChange = () => {
     this.race(() => {
       this.syncFromModel();
       const {editor, selection, str} = this;
-      const start = selection.startId ? str.findPos(selection.startId) + 1 : -1;
-      const end = selection.endId ? str.findPos(selection.endId) + 1 : -1;
-      editor.setSelection(start, end, selection.dir);
+      if (editor.setSelection) {
+        const start = selection.startId ? str.findPos(selection.startId) + 1 : -1;
+        const end = selection.endId ? str.findPos(selection.endId) + 1 : -1;
+        editor.setSelection(start, end, selection.dir);
+      }
       this.saveSelection();
     });
   };
 
   // ----------------------------------------------------- Editor-to-Model sync
-
-  // The main synchronization is from the editor to the model. This is done by
-  // listening to the change events of the editor. However, some changes might
-  // be too complex, in which case the implementation bails out of granular
-  // input synchronization and instead synchronizes the whole editor value
-  // with the model. The whole state synchronization is done
-  // by `syncFromInput()`, which uses the char-by-char diffing algorithm to
-  // compute the changes.
 
   public syncFromEditor() {
     const {str, editor} = this;
@@ -108,6 +124,7 @@ export class StrBinding {
         }
       }
     }
+    this.saveSelection();
   }
 
   private readonly onchange = (changes: SimpleChange[] | void) => {
@@ -117,28 +134,24 @@ export class StrBinding {
         let expected = view;
         for (const change of changes) expected = applyChange(expected, change);
         const editor = this.editor;
-        if (expected.length === editor.getLength() && expected === editor.get()) {
+        const areEqual =
+          (editor.getLength ? expected.length === editor.getLength() : true) && expected === editor.get();
+        if (areEqual) {
           const str = this.str;
           for (const change of changes) {
             const [position, remove, insert] = change;
             if (remove) str.del(position, remove);
             if (insert) str.ins(position, insert);
           }
+          this.saveSelection();
           return;
         }
       }
       this.syncFromEditor();
-      this.saveSelection();
     });
   };
 
   // ------------------------------------------------------------------ Polling
-
-  // Some changes to the input are not captured by the `input`, nor `change`
-  // events. For example, when input is modified programmatically
-  // `input.value = '...'`. To capture such changes, one can opt-in to polling
-  // by calling `bind(true)`. The polling interval can be configured by
-  // setting the `pollingInterval` property.
 
   public pollingInterval: number = 1000;
   private _p: number | null | unknown = null;
@@ -149,7 +162,7 @@ export class StrBinding {
         try {
           const view = this.str.view();
           const editor = this.editor;
-          const needsSync = view.length !== editor.getLength() || view !== editor.get();
+          const needsSync = (editor.getLength ? view.length !== editor.getLength() : false) || view !== editor.get();
           if (needsSync) this.syncFromEditor();
         } catch {}
         if (this._p) this.pollChanges();
@@ -178,6 +191,6 @@ export class StrBinding {
   public readonly unbind = () => {
     this.stopPolling();
     this._s?.();
-    this.editor.dispose();
+    this.editor.dispose?.();
   };
 }
