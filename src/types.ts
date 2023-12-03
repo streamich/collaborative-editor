@@ -36,6 +36,22 @@ export interface EditorFacade {
   set(text: string): void;
 
   /**
+   * Inserts text at the given position. When implemented, this method is used
+   * for granular model-to-editor sync of remote changes.
+   * @param position Position to insert text at.
+   * @param text Raw text to insert.
+   */
+  ins?(position: number, text: string): void;
+
+  /**
+   * Deletes text at the given position. When implemented, this method is used
+   * for granular model-to-editor sync of remote changes.
+   * @param position Position to delete text at.
+   * @param length Number of characters to delete.
+   */
+  del?(position: number, length: number): void;
+
+  /**
    * Emits a change event when the text changes. The event is emitted with
    * a `SimpleChange` tuple, which is a tuple of `[position, remove, insert]`,
    * where `position` is the position of the change, `remove` is the number

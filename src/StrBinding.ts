@@ -52,7 +52,32 @@ export class StrBinding {
   // ----------------------------------------------------- Model-to-Editor sync
 
   public syncFromModel() {
-    this.editor.set(this.str.view());
+    const {editor, str} = this;
+    if (editor.ins && editor.del) {
+      const view = str.view();
+      const editorText = editor.get();
+      if (view === editorText) return;
+      const changes = diff(editorText, view);
+      const changeLen = changes.length;
+      let pos: number = 0;
+      for (let i = 0; i < changeLen; i++) {
+        const change = changes[i];
+        const [type, text] = change;
+        const len = text.length;
+        switch (type) {
+          case DIFF_CHANGE_TYPE.DELETE:
+            editor.del(pos, len);
+            break;
+          case DIFF_CHANGE_TYPE.EQUAL:
+            pos += len;
+            break;
+          case DIFF_CHANGE_TYPE.INSERT:
+            editor.ins(pos, text);
+            pos += len;
+            break;
+        }
+      }
+    } else editor.set(str.view());
   }
 
   protected readonly onModelChange = () => {
