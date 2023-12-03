@@ -11,7 +11,8 @@ export class Selection {
   public ts: number = 0;
   /** Model tick. */
   public tick: number = 0;
-  /** Remote selection start. */ public startId: ITimestampStruct | null = null;
+  /** Remote selection start. */
+  public startId: ITimestampStruct | null = null;
   /** Remote selection end. */
   public endId: ITimestampStruct | null = null;
 }
