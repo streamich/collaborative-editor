@@ -99,6 +99,7 @@ export class StrBinding {
         }
       }
     }
+    this.saveSelection();
   }
 
   private readonly onchange = (changes: SimpleChange[] | void) => {
@@ -117,11 +118,11 @@ export class StrBinding {
             if (remove) str.del(position, remove);
             if (insert) str.ins(position, insert);
           }
+          this.saveSelection();
           return;
         }
       }
       this.syncFromEditor();
-      this.saveSelection();
     });
   };
 
