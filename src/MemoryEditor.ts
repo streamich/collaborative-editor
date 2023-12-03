@@ -37,10 +37,8 @@ export class MemoryEditor1 extends MemoryEditor0 {
 
   public ins(position: number, text: string): void {
     this.__str = this.__str.slice(0, position) + text + this.__str.slice(position);
-    if (this.__cursorStart > 0 && this.__cursorStart >= position)
-      this.__cursorStart += text.length;
-    if (this.__cursorEnd > 0 && this.__cursorEnd >= position)
-      this.__cursorEnd += text.length;
+    if (this.__cursorStart > 0 && this.__cursorStart >= position) this.__cursorStart += text.length;
+    if (this.__cursorEnd > 0 && this.__cursorEnd >= position) this.__cursorEnd += text.length;
   }
 
   public del(position: number, length: number): void {

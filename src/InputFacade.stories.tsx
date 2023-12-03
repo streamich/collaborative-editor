@@ -4,7 +4,7 @@ import {StrBinding} from './StrBinding';
 import {InputFacade0, InputFacade1, InputFacade2} from './InputFacade';
 import type {Meta, StoryObj} from '@storybook/react';
 
-const Demo: React.FC<{textarea: boolean, Facade: any}> = ({textarea, Facade}) => {
+const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) => {
   const inputRef = React.useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   const [model, clone] = React.useMemo(() => {
     const model = Model.withLogicalClock();
