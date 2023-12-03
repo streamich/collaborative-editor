@@ -24,11 +24,6 @@ export class StrBinding {
 
   // ---------------------------------------------------------------- Selection
 
-  // We constantly keep track of the selection state, which is stored in the
-  // Selection class. The selection state is updated on every input event and
-  // selectionchange event, and in other cases. The selection state, keeps track
-  // of, both, the local and remote selection state.
-
   protected saveSelection() {
     const {str, editor, selection} = this;
     const [selectionStart, selectionEnd, selectionDirection] = editor.getSelection?.() || [-1, -1, 0];
@@ -49,11 +44,6 @@ export class StrBinding {
 
   // ----------------------------------------------------- Model-to-Editor sync
 
-  // We can always sync the model to the editor. However, it is done only in
-  // two cases: (1) on initial binding, and (2) when the model receives remote
-  // changes. The latter is done by listening to the changes event on the str
-  // instance.
-
   public syncFromModel() {
     this.editor.set(this.str.view());
   }
@@ -72,14 +62,6 @@ export class StrBinding {
   };
 
   // ----------------------------------------------------- Editor-to-Model sync
-
-  // The main synchronization is from the editor to the model. This is done by
-  // listening to the change events of the editor. However, some changes might
-  // be too complex, in which case the implementation bails out of granular
-  // input synchronization and instead synchronizes the whole editor value
-  // with the model. The whole state synchronization is done
-  // by `syncFromInput()`, which uses the char-by-char diffing algorithm to
-  // compute the changes.
 
   public syncFromEditor() {
     const {str, editor} = this;
@@ -137,12 +119,6 @@ export class StrBinding {
   };
 
   // ------------------------------------------------------------------ Polling
-
-  // Some changes to the input are not captured by the `input`, nor `change`
-  // events. For example, when input is modified programmatically
-  // `input.value = '...'`. To capture such changes, one can opt-in to polling
-  // by calling `bind(true)`. The polling interval can be configured by
-  // setting the `pollingInterval` property.
 
   public pollingInterval: number = 1000;
   private _p: number | null | unknown = null;
