@@ -61,7 +61,7 @@ export interface EditorFacade {
    * the `SimpleChange` tuple, the `void` value can be emitted instead. For the
    * most basic implementation, one can always emit `null` on every change.
    */
-  onchange?: (change: SimpleChange[] | void) => void;
+  onchange?: (change: SimpleChange[] | void, verify?: boolean) => void;
 
   /**
    * Length of text. Should return the same result as `.get().length`,

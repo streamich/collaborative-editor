@@ -1,14 +1,14 @@
 import * as React from 'react';
-import {Model} from 'json-joy/es2020/json-crdt';
 import {StrBinding} from './StrBinding';
-import {InputFacade0, InputFacade1, InputFacade2} from './InputFacade';
+import {InputFacade0, InputFacade1, InputFacade2, InputFacade3} from './InputFacade';
 import type {Meta, StoryObj} from '@storybook/react';
+import {model0} from './__tests__/fixtures';
 
 const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) => {
   const inputRef = React.useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   const [model, clone] = React.useMemo(() => {
-    const model = Model.withLogicalClock();
-    model.api.root({text: 'Hell'});
+    const model = model0.clone();
+    // const model = log3.end.clone();
     return [model, model.clone()];
   }, [1]);
   React.useSyncExternalStore(model.api.subscribe, () => model.tick);
@@ -16,7 +16,7 @@ const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) =>
     if (!inputRef.current) return;
     const input = inputRef.current;
     const editor = new Facade(input);
-    const binding = new StrBinding(model.api.str(['text']), editor);
+    const binding = new StrBinding(model.api.str([]), editor);
     binding.bind(true);
     return () => {
       binding.unbind();
@@ -40,7 +40,7 @@ const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) =>
       <div>
         <button
           onClick={() => {
-            const str = model.api.str(['text']);
+            const str = model.api.str([]);
             str.ins(str.view().length, '?');
           }}
         >
@@ -51,7 +51,7 @@ const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) =>
         <button
           onClick={() => {
             setTimeout(() => {
-              const str = model.api.str(['text']);
+              const str = model.api.str([]);
               str.ins(str.view().length, '?');
             }, 2000);
           }}
@@ -63,7 +63,7 @@ const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) =>
         <button
           onClick={() => {
             setTimeout(() => {
-              const str = model.api.str(['text']);
+              const str = model.api.str([]);
               str.ins(0, '1. ');
             }, 2000);
           }}
@@ -103,14 +103,48 @@ export const Facade0: StoryObj<typeof meta> = {
   } as any,
 };
 
+export const Facade0Textarea: StoryObj<typeof meta> = {
+  args: {
+    Facade: InputFacade0,
+    textarea: true,
+  } as any,
+};
+
 export const Facade1: StoryObj<typeof meta> = {
   args: {
     Facade: InputFacade1,
   } as any,
 };
 
+export const Facade1Textarea: StoryObj<typeof meta> = {
+  args: {
+    Facade: InputFacade1,
+    textarea: true,
+  } as any,
+};
+
 export const Facade2: StoryObj<typeof meta> = {
   args: {
     Facade: InputFacade2,
+  } as any,
+};
+
+export const Facade2Textarea: StoryObj<typeof meta> = {
+  args: {
+    Facade: InputFacade2,
+    textarea: true,
+  } as any,
+};
+
+export const Facade3: StoryObj<typeof meta> = {
+  args: {
+    Facade: InputFacade3,
+  } as any,
+};
+
+export const Facade3Textarea: StoryObj<typeof meta> = {
+  args: {
+    Facade: InputFacade3,
+    textarea: true,
   } as any,
 };

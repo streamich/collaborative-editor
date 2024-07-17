@@ -1,3 +1,4 @@
+import {Selection} from './Selection';
 import type {EditorFacade, SimpleChange} from './types';
 
 export class InputFacade0 implements EditorFacade {
@@ -15,6 +16,16 @@ export class InputFacade0 implements EditorFacade {
 export class InputFacade1 extends InputFacade0 {
   public onchange?: (change: SimpleChange[] | void) => void;
 
+  protected readonly onInput: (e: Event) => void = (e) => {
+    this._onInput(e);
+  };
+
+  protected _onInput(): void;
+  protected _onInput(e: Event): void;
+  protected _onInput(): void {
+    this.onchange?.();
+  }
+
   constructor(protected readonly input: HTMLInputElement | HTMLTextAreaElement) {
     super(input);
     input.addEventListener('input', this.onInput as any);
@@ -23,10 +34,6 @@ export class InputFacade1 extends InputFacade0 {
   public getLength(): number {
     return this.input.value.length;
   }
-
-  private readonly onInput = () => {
-    this.onchange?.();
-  };
 
   public dispose(): void {
     this.input.removeEventListener('input', this.onInput as any);
@@ -60,11 +67,50 @@ export class InputFacade2 extends InputFacade1 {
   }
 
   private readonly onSelectionChange = () => {
-    this.onselection!();
+    this.onselection?.();
   };
 
   public dispose(): void {
     super.dispose();
     document.removeEventListener('selectionchange', this.onSelectionChange);
+  }
+}
+
+export class InputFacade3 extends InputFacade2 {
+  public selection!: Selection;
+
+  protected _onInput(e?: Event): void {
+    const event = e as InputEvent;
+    const {input} = this;
+    const {data, inputType, isComposing} = event;
+    if (isComposing) return;
+    switch (inputType) {
+      case 'insertText': {
+        if (!data || data.length !== 1) break;
+        const {selectionStart, selectionEnd} = input;
+        if (selectionStart === null || selectionEnd === null) break;
+        if (selectionStart !== selectionEnd) break;
+        if (selectionStart <= 0) break;
+        const selection = this.selection;
+        if (selectionStart - data.length !== selection.start) break;
+        if (typeof selection.end !== 'number' || typeof selection.end !== 'number') break;
+        const remove = selection.end - selection.start;
+        const change: SimpleChange = [selection.start, remove, data];
+        this.onchange!([change]);
+        return;
+      }
+      case 'deleteContentBackward': {
+        const {start, end} = this.selection;
+        if (typeof start !== 'number' || typeof end !== 'number') break;
+        const change: SimpleChange = start === end ? [start - 1, 1, ''] : [start, end - start, ''];
+        this.onchange!([change]);
+        return;
+      }
+    }
+    this.onchange!();
+  }
+
+  constructor(protected readonly input: HTMLInputElement | HTMLTextAreaElement) {
+    super(input);
   }
 }
