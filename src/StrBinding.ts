@@ -2,7 +2,7 @@ import {invokeFirstOnly} from './util';
 import {Selection} from './Selection';
 import {applyChange} from './util';
 import type {EditorFacade, SimpleChange} from './types';
-import type {StrApi} from 'json-joy/es2020/json-crdt';
+import type {StrApi} from 'json-joy/lib/json-crdt';
 const diff = require('fast-diff');
 
 const enum DIFF_CHANGE_TYPE {
@@ -22,10 +22,17 @@ export class StrBinding {
   protected readonly selection: Selection;
   protected readonly race = invokeFirstOnly();
 
+  /**
+   * Latest cached model view.
+   * @readonly
+   */
+  public view: string;
+
   constructor(
     protected readonly str: StrApi,
     protected readonly editor: EditorFacade,
   ) {
+    this.view = str.view();
     editor.selection = this.selection = new Selection();
   }
 
@@ -53,10 +60,11 @@ export class StrBinding {
 
   public syncFromModel() {
     const {editor, str} = this;
+    const view = (this.view = str.view());
     if (editor.ins && editor.del) {
-      const view = str.view();
       const editorText = editor.get();
       if (view === editorText) return;
+      // TODO: PERF: Construct `changes` from JSON CRDT Patches.
       const changes = diff(editorText, view);
       const changeLen = changes.length;
       let pos: number = 0;
@@ -77,7 +85,7 @@ export class StrBinding {
             break;
         }
       }
-    } else editor.set(str.view());
+    } else editor.set(view);
   }
 
   protected readonly onModelChange = () => {
@@ -97,57 +105,80 @@ export class StrBinding {
 
   public syncFromEditor() {
     const {str, editor} = this;
-    const view = str.view();
+    let view = this.view;
     const value = editor.get();
     if (value === view) return;
     const selection = this.selection;
     const caretPos: number | undefined = selection.start === selection.end ? selection.start ?? undefined : undefined;
     const changes = diff(view, value, caretPos);
     const changeLen = changes.length;
-    let pos: number = 0;
-    for (let i = 0; i < changeLen; i++) {
-      const change = changes[i];
-      const [type, text] = change;
-      switch (type) {
-        case DIFF_CHANGE_TYPE.DELETE: {
-          str.del(pos, text.length);
-          break;
-        }
-        case DIFF_CHANGE_TYPE.EQUAL: {
-          pos += text.length;
-          break;
-        }
-        case DIFF_CHANGE_TYPE.INSERT: {
-          str.ins(pos, text);
-          pos += text.length;
-          break;
+    str.api.transaction(() => {
+      let pos: number = 0;
+      for (let i = 0; i < changeLen; i++) {
+        const change = changes[i];
+        const [type, text] = change;
+        switch (type) {
+          case DIFF_CHANGE_TYPE.DELETE: {
+            view = applyChange(view, pos, text.length, '');
+            str.del(pos, text.length);
+            break;
+          }
+          case DIFF_CHANGE_TYPE.EQUAL: {
+            pos += text.length;
+            break;
+          }
+          case DIFF_CHANGE_TYPE.INSERT: {
+            view = applyChange(view, pos, 0, text);
+            str.ins(pos, text);
+            pos += text.length;
+            break;
+          }
         }
       }
-    }
+    });
+    this.view = view;
     this.saveSelection();
   }
 
-  private readonly onchange = (changes: SimpleChange[] | void) => {
+  private readonly onchange = (changes: SimpleChange[] | void, verify?: boolean) => {
     this.race(() => {
-      if (changes) {
-        const view = this.str.view();
-        let expected = view;
-        for (const change of changes) expected = applyChange(expected, change);
-        const editor = this.editor;
-        const areEqual =
-          (editor.getLength ? expected.length === editor.getLength() : true) && expected === editor.get();
-        if (areEqual) {
-          const str = this.str;
-          for (const change of changes) {
+      // console.time('onchange');
+      if (changes instanceof Array && changes.length > 0) {
+        const str = this.str;
+        let applyChanges = true;
+        if (verify) {
+          let view = this.view;
+          for (let i = 0; i < length; i++) {
+            const change = changes[i];
             const [position, remove, insert] = change;
-            if (remove) str.del(position, remove);
-            if (insert) str.ins(position, insert);
+            view = applyChange(view, position, remove, insert);
           }
-          this.saveSelection();
-          return;
+          const editor = this.editor;
+          if ((editor.getLength && view.length !== editor.getLength()) || view !== editor.get()) applyChanges = false;
+          else this.view = view;
+        }
+        if (applyChanges) {
+          const length = changes.length;
+          try {
+            str.api.transaction(() => {
+              let view = this.view;
+              for (let i = 0; i < length; i++) {
+                const change = changes[i];
+                const [position, remove, insert] = change;
+                view = applyChange(view, position, remove, insert);
+                if (remove) str.del(position, remove);
+                if (insert) str.ins(position, insert);
+              }
+              this.view = view;
+            });
+            this.saveSelection();
+            // console.timeEnd('onchange');
+            return;
+          } catch {}
         }
       }
       this.syncFromEditor();
+      // console.timeEnd('onchange');
     });
   };
 
@@ -160,7 +191,7 @@ export class StrBinding {
     this._p = setTimeout(() => {
       this.race(() => {
         try {
-          const view = this.str.view();
+          const view = this.view;
           const editor = this.editor;
           const needsSync = (editor.getLength ? view.length !== editor.getLength() : false) || view !== editor.get();
           if (needsSync) this.syncFromEditor();

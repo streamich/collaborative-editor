@@ -16,7 +16,7 @@ Simple integration for any plain text editor:
 
 ```ts
 import {StrBinding, EditorFacade} from 'collaborative-editor';
-import {Model} from 'json-joy/es2020/json-crdt';
+import {Model} from 'json-joy/lib/json-crdt';
 
 const str = model.api.str(['path', 'to', 'string']);
 const unbind = StrBinding.bind(str, {

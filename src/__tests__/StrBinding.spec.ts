@@ -1,4 +1,4 @@
-import {Model} from 'json-joy/es2020/json-crdt';
+import {Model} from 'json-joy/lib/json-crdt';
 import {StrBinding} from '../StrBinding';
 import {MemoryEditor0, MemoryEditor1} from '../MemoryEditor';
 

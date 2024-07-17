@@ -1,7 +1,5 @@
-import type {SimpleChange} from './types';
-
-export const applyChange = (str: string, [position, remove, insert]: SimpleChange): string =>
-  str.slice(0, position) + insert + str.slice(position + remove);
+export const applyChange = (view: string, position: number, remove: number, insert: string): string =>
+  view.slice(0, position) + insert + view.slice(position + remove);
 
 export const invokeFirstOnly = () => {
   let invoked: boolean = false;
