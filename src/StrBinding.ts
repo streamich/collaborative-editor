@@ -60,7 +60,7 @@ export class StrBinding {
 
   public syncFromModel() {
     const {editor, str} = this;
-    const view = this.view = str.view();
+    const view = (this.view = str.view());
     if (editor.ins && editor.del) {
       const editorText = editor.get();
       if (view === editorText) return;
