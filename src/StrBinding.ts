@@ -112,28 +112,30 @@ export class StrBinding {
     const caretPos: number | undefined = selection.start === selection.end ? selection.start ?? undefined : undefined;
     const changes = diff(view, value, caretPos);
     const changeLen = changes.length;
-    let pos: number = 0;
-    for (let i = 0; i < changeLen; i++) {
-      const change = changes[i];
-      const [type, text] = change;
-      switch (type) {
-        case DIFF_CHANGE_TYPE.DELETE: {
-          view = applyChange(view, pos, text.length, '');
-          str.del(pos, text.length);
-          break;
-        }
-        case DIFF_CHANGE_TYPE.EQUAL: {
-          pos += text.length;
-          break;
-        }
-        case DIFF_CHANGE_TYPE.INSERT: {
-          view = applyChange(view, pos, 0, text);
-          str.ins(pos, text);
-          pos += text.length;
-          break;
+    str.api.transaction(() => {
+      let pos: number = 0;
+      for (let i = 0; i < changeLen; i++) {
+        const change = changes[i];
+        const [type, text] = change;
+        switch (type) {
+          case DIFF_CHANGE_TYPE.DELETE: {
+            view = applyChange(view, pos, text.length, '');
+            str.del(pos, text.length);
+            break;
+          }
+          case DIFF_CHANGE_TYPE.EQUAL: {
+            pos += text.length;
+            break;
+          }
+          case DIFF_CHANGE_TYPE.INSERT: {
+            view = applyChange(view, pos, 0, text);
+            str.ins(pos, text);
+            pos += text.length;
+            break;
+          }
         }
       }
-    }
+    });
     this.view = view;
     this.saveSelection();
   }
@@ -158,16 +160,17 @@ export class StrBinding {
         if (applyChanges) {
           const length = changes.length;
           try {
-            let view = this.view;
-            for (let i = 0; i < length; i++) {
-              const change = changes[i];
-              const [position, remove, insert] = change;
-              view = applyChange(view, position, remove, insert);
-              // TODO: Do these two changes result in a single patch?
-              if (remove) str.del(position, remove);
-              if (insert) str.ins(position, insert);
-            }
-            this.view = view;
+            str.api.transaction(() => {
+              let view = this.view;
+              for (let i = 0; i < length; i++) {
+                const change = changes[i];
+                const [position, remove, insert] = change;
+                view = applyChange(view, position, remove, insert);
+                if (remove) str.del(position, remove);
+                if (insert) str.ins(position, insert);
+              }
+              this.view = view;
+            });
             this.saveSelection();
             // console.timeEnd('onchange');
             return;
