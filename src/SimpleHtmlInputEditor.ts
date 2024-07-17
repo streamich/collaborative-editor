@@ -1,6 +1,8 @@
+import {Selection} from './Selection';
 import type {EditorFacade, SimpleChange} from './types';
 
 export class SimpleHtmlInputEditor implements EditorFacade {
+  public selection!: Selection;
   public onchange?: (change: SimpleChange[] | void) => void;
   public onselection?: () => void;
 
@@ -22,8 +24,7 @@ export class SimpleHtmlInputEditor implements EditorFacade {
   }
 
   public getSelection(): [number, number, -1 | 0 | 1] | null {
-    const input = this.input;
-    const {selectionStart, selectionEnd, selectionDirection} = input;
+    const {selectionStart, selectionEnd, selectionDirection} = this.input;
     const direction = selectionDirection === 'backward' ? -1 : selectionDirection === 'forward' ? 1 : 0;
     return [
       typeof selectionStart === 'number' ? selectionStart : -1,
@@ -39,12 +40,39 @@ export class SimpleHtmlInputEditor implements EditorFacade {
     input.selectionDirection = direction === -1 ? 'backward' : direction === 1 ? 'forward' : 'none';
   }
 
-  private readonly onInput = () => {
+  private readonly onInput = (e: Event): void => {
+    const event = e as InputEvent;
+    const {input} = this;
+    const {data, inputType, isComposing} = event;
+    if (isComposing) return;
+    switch (inputType) {
+      case 'insertText': {
+        if (!data || data.length !== 1) break;
+        const {selectionStart, selectionEnd} = input;
+        if (selectionStart === null || selectionEnd === null) break;
+        if (selectionStart !== selectionEnd) break;
+        if (selectionStart <= 0) break;
+        const selection = this.selection;
+        if (selectionStart - data.length !== selection.start) break;
+        if (typeof selection.end !== 'number' || typeof selection.end !== 'number') break;
+        const remove = selection.end - selection.start;
+        const change: SimpleChange = [selection.start, remove, data];
+        this.onchange!([change]);
+        return;
+      }
+      case 'deleteContentBackward': {
+        const {start, end} = this.selection;
+        if (typeof start !== 'number' || typeof end !== 'number') break;
+        const change: SimpleChange = start === end ? [start - 1, 1, ''] : [start, end - start, ''];
+        this.onchange!([change]);
+        return;
+      }
+    }
     this.onchange!();
   };
 
   private readonly onSelectionChange = () => {
-    this.onselection!();
+    this.onselection?.();
   };
 
   public dispose(): void {

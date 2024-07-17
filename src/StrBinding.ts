@@ -1,8 +1,7 @@
-import {invokeFirstOnly} from './util';
+import {applyChange, invokeFirstOnly} from './util';
 import {Selection} from './Selection';
-import {applyChange} from './util';
 import type {EditorFacade, SimpleChange} from './types';
-import type {StrApi} from 'json-joy/es2020/json-crdt';
+import type {StrApi} from 'json-joy/lib/json-crdt';
 const diff = require('fast-diff');
 
 const enum DIFF_CHANGE_TYPE {
@@ -15,10 +14,17 @@ export class StrBinding {
   protected readonly selection: Selection;
   protected readonly race = invokeFirstOnly();
 
+  /**
+   * Latest cached model view.
+   * @readonly
+   */
+  public view: string;
+
   constructor(
     protected readonly str: StrApi,
     protected readonly editor: EditorFacade,
   ) {
+    this.view = str.view();
     editor.selection = this.selection = new Selection();
   }
 
@@ -55,7 +61,8 @@ export class StrBinding {
   // instance.
 
   public syncFromModel() {
-    this.editor.set(this.str.view());
+    const view = this.view = this.str.view();
+    this.editor.set(view);
   }
 
   protected readonly onModelChange = () => {
@@ -81,7 +88,7 @@ export class StrBinding {
 
   public syncFromEditor() {
     const {str, editor} = this;
-    const view = str.view();
+    let view = this.view;
     const value = editor.get();
     if (value === view) return;
     const selection = this.selection;
@@ -94,6 +101,7 @@ export class StrBinding {
       const [type, text] = change;
       switch (type) {
         case DIFF_CHANGE_TYPE.DELETE: {
+          view = applyChange(view, pos, text.length, '');
           str.del(pos, text.length);
           break;
         }
@@ -102,33 +110,54 @@ export class StrBinding {
           break;
         }
         case DIFF_CHANGE_TYPE.INSERT: {
+          view = applyChange(view, pos, 0, text);
           str.ins(pos, text);
           pos += text.length;
           break;
         }
       }
     }
+    this.view = view;
+    this.saveSelection();
   }
 
-  private readonly onchange = (changes: SimpleChange[] | void) => {
+  private readonly onchange = (changes: SimpleChange[] | void, verify?: boolean) => {
     this.race(() => {
-      if (changes) {
-        const view = this.str.view();
-        let expected = view;
-        for (const change of changes) expected = applyChange(expected, change);
-        const editor = this.editor;
-        if (expected.length === editor.getLength() && expected === editor.get()) {
-          const str = this.str;
+      // console.time('onchange');
+      if (changes instanceof Array && changes.length > 0) {
+        const str = this.str;
+        let applyChanges = true;
+        if (verify) {
+          let view = this.view;
           for (const change of changes) {
             const [position, remove, insert] = change;
-            if (remove) str.del(position, remove);
-            if (insert) str.ins(position, insert);
+            view = applyChange(view, position, remove, insert);
           }
-          return;
+          const editor = this.editor;
+          if (view.length !== editor.getLength() || view !== editor.get()) applyChanges = false;
+          else this.view = view;
+        }
+        if (applyChanges) {
+          const length = changes.length;
+          try {
+            let view = this.view;
+            for (let i = 0; i < length; i++) {
+              const change = changes[i];
+              const [position, remove, insert] = change;
+              view = applyChange(view, position, remove, insert);
+              // TODO: Do these two changes result in a single patch?
+              if (remove) str.del(position, remove);
+              if (insert) str.ins(position, insert);
+            }
+            this.view = view;
+            this.saveSelection();
+            // console.timeEnd('onchange');
+            return;
+          } catch {}
         }
       }
       this.syncFromEditor();
-      this.saveSelection();
+      // console.timeEnd('onchange');
     });
   };
 
@@ -147,7 +176,7 @@ export class StrBinding {
     this._p = setTimeout(() => {
       this.race(() => {
         try {
-          const view = this.str.view();
+          const view = this.view;
           const editor = this.editor;
           const needsSync = view.length !== editor.getLength() || view !== editor.get();
           if (needsSync) this.syncFromEditor();

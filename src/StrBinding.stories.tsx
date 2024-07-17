@@ -1,14 +1,14 @@
 import * as React from 'react';
-import {Model} from 'json-joy/es2020/json-crdt';
 import {StrBinding} from './StrBinding';
 import {SimpleHtmlInputEditor} from './SimpleHtmlInputEditor';
 import type {Meta, StoryObj} from '@storybook/react';
+import {log3, model0} from './__tests__/fixtures';
 
 const Demo: React.FC<{textarea: boolean}> = ({textarea}) => {
   const inputRef = React.useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   const [model, clone] = React.useMemo(() => {
-    const model = Model.withLogicalClock();
-    model.api.root({text: 'Hell'});
+    const model = model0.clone();
+    // const model = log3.end.clone();
     return [model, model.clone()];
   }, [1]);
   React.useSyncExternalStore(model.api.subscribe, () => model.tick);
@@ -16,7 +16,7 @@ const Demo: React.FC<{textarea: boolean}> = ({textarea}) => {
     if (!inputRef.current) return;
     const input = inputRef.current;
     const editor = new SimpleHtmlInputEditor(input);
-    const binding = new StrBinding(model.api.str(['text']), editor);
+    const binding = new StrBinding(model.api.str([]), editor);
     binding.bind(true);
     return () => {
       binding.unbind();
@@ -25,7 +25,7 @@ const Demo: React.FC<{textarea: boolean}> = ({textarea}) => {
 
   return (
     <div>
-      {textarea ? <textarea ref={inputRef as any} /> : <input ref={inputRef as any} type="text" />}
+      {textarea ? <textarea ref={inputRef as any} style={{width: '100%', height: 500}} /> : <input ref={inputRef as any} type="text" />}
       <div>
         <button
           onClick={() => {
@@ -40,7 +40,7 @@ const Demo: React.FC<{textarea: boolean}> = ({textarea}) => {
       <div>
         <button
           onClick={() => {
-            const str = model.api.str(['text']);
+            const str = model.api.str([]);
             str.ins(str.view().length, '?');
           }}
         >
@@ -51,7 +51,7 @@ const Demo: React.FC<{textarea: boolean}> = ({textarea}) => {
         <button
           onClick={() => {
             setTimeout(() => {
-              const str = model.api.str(['text']);
+              const str = model.api.str([]);
               str.ins(str.view().length, '?');
             }, 2000);
           }}
@@ -63,7 +63,7 @@ const Demo: React.FC<{textarea: boolean}> = ({textarea}) => {
         <button
           onClick={() => {
             setTimeout(() => {
-              const str = model.api.str(['text']);
+              const str = model.api.str([]);
               str.ins(0, '1. ');
             }, 2000);
           }}
