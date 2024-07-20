@@ -106,10 +106,7 @@ export interface EditorFacade {
 /**
  * Ephemeral data that is broadcasted about other peers in the editor.
  */
-export type PeerData = [
-  peerId: string,
-  selections?: Record<DocumentId, Record<DocumentId, JsonCrdtSelection[]>>,
-];
+export type PeerData = [peerId: string, selections?: Record<DocumentId, Record<DocumentId, JsonCrdtSelection[]>>];
 
 /**
  * Document ID, which is a globally unique identifier for a document.
@@ -124,43 +121,26 @@ export type UiLocationId = string;
 
 export type JsonCrdtSelection = RgaSelection | AnySelection | ObjSelection | VecSelection;
 
-export type NodeSelection<Type extends number> = [
-  type: Type,
-  nodeId: JsonCrdtId,
-];
+export type NodeSelection<Type extends number> = [type: Type, nodeId: JsonCrdtId];
 
 /** Selection within an RGA node, such as a "str", "arr", or "bin" nodes. */
-export type RgaSelection = [
-  ...NodeSelection<0>,
-  ...JsonCrdtCursor,
-];
+export type RgaSelection = [...NodeSelection<0>, ...JsonCrdtCursor];
 
 /** Selects a whole JSON CRDT node, any node. */
-export type AnySelection = [
-  ...NodeSelection<1>,
-];
+export type AnySelection = [...NodeSelection<1>];
 
 /** Selects an "obj" node with ability to select a specific node. */
-export type ObjSelection = [
-  ...NodeSelection<2>,
-  key?: string,
-];
+export type ObjSelection = [...NodeSelection<2>, key?: string];
 
 /** Selects a "vec" node with ability to select a specific index. */
-export type VecSelection = [
-  ...NodeSelection<3>,
-  index?: number,
-];
+export type VecSelection = [...NodeSelection<3>, index?: number];
 
 /**
  * The selection range of a peer. `anchor` is the starting point of the selection,
  * and `focus` is the ending point of the selection. If `focus` is not provided,
  * the selection is a caret (a single point).
  */
-export type JsonCrdtCursor = [
-  anchor: JsonCrdtRgaPoint,
-  focus?: JsonCrdtRgaPoint,
-];
+export type JsonCrdtCursor = [anchor: JsonCrdtRgaPoint, focus?: JsonCrdtRgaPoint];
 
 export type JsonCrdtRgaPoint = [
   id: JsonCrdtIdShorthand,
