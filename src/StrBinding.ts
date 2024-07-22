@@ -1,8 +1,7 @@
 import {invokeFirstOnly} from './util';
 import {Selection} from './Selection';
 import {applyChange} from './util';
-import type {EditorFacade, SimpleChange} from './types';
-import type {StrApi} from 'json-joy/lib/json-crdt';
+import type {CollaborativeString, EditorFacade, SimpleChange} from './types';
 const diff = require('fast-diff');
 
 const enum DIFF_CHANGE_TYPE {
@@ -12,7 +11,7 @@ const enum DIFF_CHANGE_TYPE {
 }
 
 export class StrBinding {
-  public static bind = (str: StrApi, editor: EditorFacade, polling?: boolean) => {
+  public static bind = (str: CollaborativeString, editor: EditorFacade, polling?: boolean) => {
     const binding = new StrBinding(str, editor);
     binding.syncFromModel();
     binding.bind(polling);
@@ -29,7 +28,7 @@ export class StrBinding {
   public view: string;
 
   constructor(
-    protected readonly str: StrApi,
+    protected readonly str: CollaborativeString,
     protected readonly editor: EditorFacade,
   ) {
     this.view = str.view();
