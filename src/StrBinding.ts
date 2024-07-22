@@ -1,7 +1,7 @@
 import {invokeFirstOnly} from './util';
 import {Selection} from './Selection';
 import {applyChange} from './util';
-import type {CollaborativeString, EditorFacade, SimpleChange} from './types';
+import type {CollaborativeStr, EditorFacade, SimpleChange} from './types';
 const diff = require('fast-diff');
 
 const enum DIFF_CHANGE_TYPE {
@@ -11,7 +11,7 @@ const enum DIFF_CHANGE_TYPE {
 }
 
 export class StrBinding {
-  public static bind = (str: CollaborativeString, editor: EditorFacade, polling?: boolean) => {
+  public static bind = (str: CollaborativeStr, editor: EditorFacade, polling?: boolean) => {
     const binding = new StrBinding(str, editor);
     binding.syncFromModel();
     binding.bind(polling);
@@ -28,7 +28,7 @@ export class StrBinding {
   public view: string;
 
   constructor(
-    protected readonly str: CollaborativeString,
+    protected readonly str: CollaborativeStr,
     protected readonly editor: EditorFacade,
   ) {
     this.view = str.view();

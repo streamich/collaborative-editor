@@ -105,9 +105,9 @@ export interface EditorFacade {
 }
 
 /**
- * Represents the model of a collaborative (replicated) string.
+ * Represents the model of a collaborative (JSON CRDT) string.
  */
-export type CollaborativeString = Pick<StrApi, 'view' | 'ins' | 'del' | 'findId' | 'findPos'> & {
+export type CollaborativeStr = Pick<StrApi, 'view' | 'ins' | 'del' | 'findId' | 'findPos'> & {
   api: Pick<StrApi['api'], 'transaction'>
     & {
       onChange: {

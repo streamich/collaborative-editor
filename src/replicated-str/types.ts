@@ -1,6 +1,6 @@
 import type {ITimestampStruct} from 'json-joy/lib/json-crdt';
 
-export interface CollaborativeStringFacade {
+export interface ReplicatedStrFacade {
   /** Retrieve string value. */
   view: () => string;
 
