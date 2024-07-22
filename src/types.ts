@@ -104,7 +104,9 @@ export interface EditorFacade {
   dispose?(): void;
 }
 
-export type CollaborativeString = Pick<StrApi, 'view' | 'ins' | 'del' | 'findId' | 'findPos'> & {api: Pick<StrApi['api'], 'onChange' | 'transaction'> & {model: {tick: number}}};
+export type CollaborativeString = Pick<StrApi, 'view' | 'ins' | 'del' | 'findId' | 'findPos'> & {
+  api: Pick<StrApi['api'], 'onChange' | 'transaction'> & {model: {tick: number}};
+};
 
 export interface CollaborativeStringFacade {
   /** Retrieve string value. */
@@ -117,7 +119,7 @@ export interface CollaborativeStringFacade {
   del(pos: number, length: number): void;
 
   /** Change listener. `callback` is called on every change. Returns `unsubscribe` method. */
-  onChange(callback: () => void): (() => void);
+  onChange(callback: () => void): () => void;
 
   /**
    * Given a character index in local coordinates, find the ID of the character
