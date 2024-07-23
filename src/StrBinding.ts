@@ -84,18 +84,20 @@ export class StrBinding {
             break;
         }
       }
-    } else editor.set(view);
-  }
-
-  protected readonly onModelChange = () => {
-    this.race(() => {
-      this.syncFromModel();
-      const {editor, selection, str} = this;
+    } else {
+      editor.set(view);
+      const {selection} = this;
       if (editor.setSelection) {
         const start = selection.startId ? str.findPos(selection.startId) + 1 : -1;
         const end = selection.endId ? str.findPos(selection.endId) + 1 : -1;
         editor.setSelection(start, end, selection.dir);
       }
+    }
+  }
+
+  protected readonly onModelChange = () => {
+    this.race(() => {
+      this.syncFromModel();
       this.saveSelection();
     });
   };

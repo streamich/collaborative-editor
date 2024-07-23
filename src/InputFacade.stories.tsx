@@ -157,7 +157,7 @@ export const Facade4: StoryObj<typeof meta> = {
 
 export const Facade4Textarea: StoryObj<typeof meta> = {
   args: {
-    Facade: InputFacade3,
+    Facade: InputFacade4,
     textarea: true,
   } as any,
 };

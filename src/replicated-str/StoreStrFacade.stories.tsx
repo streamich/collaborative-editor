@@ -20,7 +20,7 @@ const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) =>
     const input = inputRef.current;
     const editor = new Facade(input);
     const store = new JsonPatchStore(model, []);
-    const facade = new StoreStrFacade(store);
+    const facade = new StoreStrFacade(store, true);
     const str = new ReplicatedStr(facade);
     const binding = new StrBinding(str, editor);
     binding.bind(false);
@@ -163,7 +163,7 @@ export const Facade4: StoryObj<typeof meta> = {
 
 export const Facade4Textarea: StoryObj<typeof meta> = {
   args: {
-    Facade: InputFacade3,
+    Facade: InputFacade4,
     textarea: true,
   } as any,
 };
