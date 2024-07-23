@@ -5964,7 +5964,7 @@ __metadata:
     eslint-plugin-storybook: "npm:^0.6.15"
     fast-diff: "npm:^1.3.0"
     jest: "npm:^29.7.0"
-    json-joy: "npm:^16.13.1"
+    json-joy: "npm:^16.18.0"
     prettier: "npm:^3.1.0"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
@@ -9538,9 +9538,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-joy@npm:^16.13.1":
-  version: 16.13.1
-  resolution: "json-joy@npm:16.13.1"
+"json-joy@npm:^16.18.0":
+  version: 16.18.0
+  resolution: "json-joy@npm:16.18.0"
   dependencies:
     "@jsonjoy.com/base64": "npm:^1.1.1"
     "@jsonjoy.com/json-pack": "npm:^1.0.2"
@@ -9565,7 +9565,7 @@ __metadata:
     json-pointer: bin/json-pointer.js
     json-pointer-test: bin/json-pointer-test.js
     json-unpack: bin/json-unpack.js
-  checksum: 10c0/82dc502f288940dfbb97bebd1568b31f3f5e7cb9345f87d1a631113b49e902671198b1c1bfd7e8518fb8b0114a2a89f573b46fb1a2b829535c597e716f23fa36
+  checksum: 10c0/8fe94b3302879ae06c4899f7a2cc462c6dd86a38df4c54047a1dd1010ec7a0354892ff32f624da1df1d1ca79e14a17c68c7718aa1bd4052f825d6d79af62073e
   languageName: node
   linkType: hard
 

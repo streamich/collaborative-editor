@@ -1,8 +1,11 @@
 import * as React from 'react';
-import {StrBinding} from './StrBinding';
-import {InputFacade0, InputFacade1, InputFacade2, InputFacade3, InputFacade4} from './InputFacade';
+import {JsonPatchStore} from 'json-joy/lib/json-crdt/json-patch/JsonPatchStore';
+import {StrBinding} from '../StrBinding';
+import {InputFacade0, InputFacade1, InputFacade2, InputFacade3, InputFacade4} from '../InputFacade';
 import type {Meta, StoryObj} from '@storybook/react';
-import {model0} from './__tests__/fixtures';
+import {model0} from '../__tests__/fixtures';
+import {StoreStrFacade} from './StoreStrFacade';
+import {ReplicatedStr} from './ReplicatedStr';
 
 const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) => {
   const inputRef = React.useRef<HTMLInputElement | HTMLTextAreaElement>(null);
@@ -16,8 +19,11 @@ const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) =>
     if (!inputRef.current) return;
     const input = inputRef.current;
     const editor = new Facade(input);
-    const binding = new StrBinding(model.api.str([]), editor);
-    binding.bind(true);
+    const store = new JsonPatchStore(model, []);
+    const facade = new StoreStrFacade(store, true);
+    const str = new ReplicatedStr(facade);
+    const binding = new StrBinding(str, editor);
+    binding.bind(false);
     return () => {
       binding.unbind();
     };
@@ -89,9 +95,9 @@ const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) =>
   );
 };
 
-const meta: Meta<typeof Text> = {
-  title: 'InputFacade',
-  component: Demo as any,
+const meta: Meta<typeof Demo> = {
+  title: 'StoreStrFacade',
+  component: Demo,
   argTypes: {},
 };
 

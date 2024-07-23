@@ -1,8 +1,7 @@
 import {invokeFirstOnly} from './util';
 import {Selection} from './Selection';
 import {applyChange} from './util';
-import type {EditorFacade, SimpleChange} from './types';
-import type {StrApi} from 'json-joy/lib/json-crdt';
+import type {CollaborativeStr, EditorFacade, SimpleChange} from './types';
 const diff = require('fast-diff');
 
 const enum DIFF_CHANGE_TYPE {
@@ -12,7 +11,7 @@ const enum DIFF_CHANGE_TYPE {
 }
 
 export class StrBinding {
-  public static bind = (str: StrApi, editor: EditorFacade, polling?: boolean) => {
+  public static bind = (str: CollaborativeStr, editor: EditorFacade, polling?: boolean) => {
     const binding = new StrBinding(str, editor);
     binding.syncFromModel();
     binding.bind(polling);
@@ -29,7 +28,7 @@ export class StrBinding {
   public view: string;
 
   constructor(
-    protected readonly str: StrApi,
+    protected readonly str: CollaborativeStr,
     protected readonly editor: EditorFacade,
   ) {
     this.view = str.view();
@@ -85,18 +84,20 @@ export class StrBinding {
             break;
         }
       }
-    } else editor.set(view);
-  }
-
-  protected readonly onModelChange = () => {
-    this.race(() => {
-      this.syncFromModel();
-      const {editor, selection, str} = this;
+    } else {
+      editor.set(view);
+      const {selection} = this;
       if (editor.setSelection) {
         const start = selection.startId ? str.findPos(selection.startId) + 1 : -1;
         const end = selection.endId ? str.findPos(selection.endId) + 1 : -1;
         editor.setSelection(start, end, selection.dir);
       }
+    }
+  }
+
+  protected readonly onModelChange = () => {
+    this.race(() => {
+      this.syncFromModel();
       this.saveSelection();
     });
   };
