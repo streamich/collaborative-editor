@@ -12,7 +12,7 @@ export class ReplicatedStr implements CollaborativeStr {
   public readonly findPos: CollaborativeStr['findPos'];
   public readonly api: CollaborativeStr['api'];
 
-  constructor (protected readonly facade: ReplicatedStrFacade) {
+  constructor(protected readonly facade: ReplicatedStrFacade) {
     this.view = facade.view;
     this.ins = facade.ins;
     this.del = facade.del;
@@ -23,7 +23,8 @@ export class ReplicatedStr implements CollaborativeStr {
         listen: this.facade.subscribe,
       },
       transaction: (callback: () => void): void => {
-        if (facade.transaction) facade.transaction(callback); else callback();
+        if (facade.transaction) facade.transaction(callback);
+        else callback();
       },
       model: {
         get tick(): number {

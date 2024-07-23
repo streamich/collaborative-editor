@@ -108,13 +108,12 @@ export interface EditorFacade {
  * Represents the model of a collaborative (JSON CRDT) string.
  */
 export type CollaborativeStr = Pick<StrApi, 'view' | 'ins' | 'del' | 'findId' | 'findPos'> & {
-  api: Pick<StrApi['api'], 'transaction'>
-    & {
-      onChange: {
-        listen: (callback: () => void) => (() => void),
-      },
-      model: {tick: number}
+  api: Pick<StrApi['api'], 'transaction'> & {
+    onChange: {
+      listen: (callback: () => void) => () => void;
     };
+    model: {tick: number};
+  };
 };
 
 /**

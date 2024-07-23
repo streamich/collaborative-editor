@@ -11,7 +11,7 @@ export interface ReplicatedStrFacade {
   del: (pos: number, length: number) => void;
 
   /** Change listener. `callback` is called on every change. Returns `unsubscribe` method. */
-  subscribe: (callback: () => void) => (() => void);
+  subscribe: (callback: () => void) => () => void;
 
   /**
    * Given a character index in local coordinates, find the ID of the character

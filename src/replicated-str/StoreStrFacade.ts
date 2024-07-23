@@ -3,7 +3,7 @@ import type {JsonPatchStore} from 'json-joy/lib/json-crdt/json-patch/JsonPatchSt
 import type {ReplicatedStrFacade} from './types';
 
 /** "strict" store does not expose JSON CRDT model directly. */
-export type JsonPatchStoreStrict = Pick<JsonPatchStore<any>, 'getSnapshot' | 'subscribe' | 'update'>
+export type JsonPatchStoreStrict = Pick<JsonPatchStore<any>, 'getSnapshot' | 'subscribe' | 'update'>;
 
 export class StoreStrFacade implements ReplicatedStrFacade {
   public readonly view: ReplicatedStrFacade['view'];
@@ -18,7 +18,10 @@ export class StoreStrFacade implements ReplicatedStrFacade {
   /**
    * @param store JsonPatchStore instance which wraps a "str" node.
    */
-  constructor(protected readonly store: JsonPatchStore<any> | JsonPatchStoreStrict, strict: boolean = false) {
+  constructor(
+    protected readonly store: JsonPatchStore<any> | JsonPatchStoreStrict,
+    strict: boolean = false,
+  ) {
     this.view = store.getSnapshot as unknown as ReplicatedStrFacade['view'];
     this.ins = (pos: number, str: string) => {
       store.update({op: 'str_ins', path: [], pos, str});
