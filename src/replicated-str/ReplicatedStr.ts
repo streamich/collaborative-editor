@@ -20,10 +20,10 @@ export class ReplicatedStr implements CollaborativeStr {
     this.findPos = facade.findPos ?? (() => -1);
     this.api = {
       onChange: {
-        listen: this.facade.onChange,
+        listen: this.facade.subscribe,
       },
       transaction: (callback: () => void): void => {
-        this.facade.transaction?.(callback) ?? callback();
+        if (facade.transaction) facade.transaction(callback); else callback();
       },
       model: {
         get tick(): number {
