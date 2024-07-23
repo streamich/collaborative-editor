@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {StrBinding} from './StrBinding';
-import {InputFacade0, InputFacade1, InputFacade2, InputFacade3} from './InputFacade';
+import {InputFacade0, InputFacade1, InputFacade2, InputFacade3, InputFacade4} from './InputFacade';
 import type {Meta, StoryObj} from '@storybook/react';
 import {model0} from './__tests__/fixtures';
 
@@ -143,6 +143,19 @@ export const Facade3: StoryObj<typeof meta> = {
 };
 
 export const Facade3Textarea: StoryObj<typeof meta> = {
+  args: {
+    Facade: InputFacade3,
+    textarea: true,
+  } as any,
+};
+
+export const Facade4: StoryObj<typeof meta> = {
+  args: {
+    Facade: InputFacade4,
+  } as any,
+};
+
+export const Facade4Textarea: StoryObj<typeof meta> = {
   args: {
     Facade: InputFacade3,
     textarea: true,
