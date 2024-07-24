@@ -10,9 +10,6 @@ export class StoreStrFacade implements ReplicatedStrFacade {
   public readonly ins: ReplicatedStrFacade['ins'];
   public readonly del: ReplicatedStrFacade['del'];
   public readonly subscribe: ReplicatedStrFacade['subscribe'];
-  public readonly findId: ReplicatedStrFacade['findId'];
-  public readonly findPos: ReplicatedStrFacade['findPos'];
-  public readonly transaction: ReplicatedStrFacade['transaction'];
   public readonly tick: ReplicatedStrFacade['tick'];
 
   /**
@@ -20,7 +17,7 @@ export class StoreStrFacade implements ReplicatedStrFacade {
    */
   constructor(
     protected readonly store: JsonPatchStore<any> | JsonPatchStoreStrict,
-    strict: boolean = false,
+    protected readonly strict: boolean = false,
   ) {
     this.view = store.getSnapshot as unknown as ReplicatedStrFacade['view'];
     this.ins = (pos: number, str: string) => {
@@ -30,12 +27,28 @@ export class StoreStrFacade implements ReplicatedStrFacade {
       store.update({op: 'str_del', path: [], pos, len});
     };
     this.subscribe = store.subscribe;
-    const str = strict ? void 0 : ((<JsonPatchStore<any>>store).api as StrApi)?.asStr?.();
-    if (str) {
-      this.findId = str.findId.bind(str);
-      this.findPos = str.findPos.bind(str);
-      this.transaction = str.api.transaction.bind(str.api);
-      this.tick = () => str.api.model.tick;
-    }
+    this.tick = strict ? undefined : () =>
+      ((<JsonPatchStore<any>>this.store).api?.() as StrApi)?.asStr?.().api.model.tick ?? 0;
+  }
+
+  get findId(): undefined | ReplicatedStrFacade['findId'] {
+    if (this.strict) return void 0;
+    const str = ((<JsonPatchStore<any>>this.store).api?.() as StrApi)?.asStr?.();
+    if (!str) return void 0;
+    return str.findId.bind(str);
+  }
+
+  get findPos(): undefined | ReplicatedStrFacade['findPos'] {
+    if (this.strict) return void 0;
+    const str = ((<JsonPatchStore<any>>this.store).api?.() as StrApi)?.asStr?.();
+    if (!str) return void 0;
+    return str.findPos.bind(str);
+  }
+
+  get transaction(): undefined | ReplicatedStrFacade['transaction'] {
+    if (this.strict) return void 0;
+    const str = ((<JsonPatchStore<any>>this.store).api?.() as StrApi)?.asStr?.();
+    if (!str) return void 0;
+    return str.api.transaction.bind(str.api);
   }
 }
