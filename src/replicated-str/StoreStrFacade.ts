@@ -27,8 +27,9 @@ export class StoreStrFacade implements ReplicatedStrFacade {
       store.update({op: 'str_del', path: [], pos, len});
     };
     this.subscribe = store.subscribe;
-    this.tick = strict ? undefined : () =>
-      ((<JsonPatchStore<any>>this.store).api?.() as StrApi)?.asStr?.().api.model.tick ?? 0;
+    this.tick = strict
+      ? undefined
+      : () => ((<JsonPatchStore<any>>this.store).api?.() as StrApi)?.asStr?.().api.model.tick ?? 0;
   }
 
   get findId(): undefined | ReplicatedStrFacade['findId'] {
