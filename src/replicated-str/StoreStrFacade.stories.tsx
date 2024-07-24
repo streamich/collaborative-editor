@@ -22,7 +22,7 @@ const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) =>
     const store = new JsonPatchStore(model, []);
     const facade = new StoreStrFacade(store, true);
     const str = new ReplicatedStr(facade);
-    const binding = new StrBinding(str, editor);
+    const binding = new StrBinding(() => str, editor);
     binding.bind(false);
     return () => {
       binding.unbind();

@@ -11,7 +11,7 @@ const enum DIFF_CHANGE_TYPE {
 }
 
 export class StrBinding {
-  public static bind = (str: CollaborativeStr, editor: EditorFacade, polling?: boolean) => {
+  public static bind = (str: () => CollaborativeStr, editor: EditorFacade, polling?: boolean) => {
     const binding = new StrBinding(str, editor);
     binding.syncFromModel();
     binding.bind(polling);
@@ -28,17 +28,18 @@ export class StrBinding {
   public view: string;
 
   constructor(
-    protected readonly str: CollaborativeStr,
+    protected readonly str: () => CollaborativeStr,
     protected readonly editor: EditorFacade,
   ) {
-    this.view = str.view();
+    this.view = str().view();
     editor.selection = this.selection = new Selection();
   }
 
   // ---------------------------------------------------------------- Selection
 
   protected saveSelection() {
-    const {str, editor, selection} = this;
+    const {editor, selection} = this;
+    const str = this.str();
     const [selectionStart, selectionEnd, selectionDirection] = editor.getSelection?.() || [-1, -1, 0];
     const {start, end} = selection;
     const now = Date.now();
@@ -58,7 +59,8 @@ export class StrBinding {
   // ----------------------------------------------------- Model-to-Editor sync
 
   public syncFromModel() {
-    const {editor, str} = this;
+    const editor = this.editor;
+    const str = this.str();
     const view = (this.view = str.view());
     if (editor.ins && editor.del) {
       const editorText = editor.get();
@@ -105,14 +107,14 @@ export class StrBinding {
   // ----------------------------------------------------- Editor-to-Model sync
 
   public syncFromEditor() {
-    const {str, editor} = this;
     let view = this.view;
-    const value = editor.get();
+    const value = this.editor.get();
     if (value === view) return;
     const selection = this.selection;
     const caretPos: number | undefined = selection.start === selection.end ? selection.start ?? undefined : undefined;
     const changes = diff(view, value, caretPos);
     const changeLen = changes.length;
+    const str = this.str();
     str.api.transaction(() => {
       let pos: number = 0;
       for (let i = 0; i < changeLen; i++) {
@@ -145,7 +147,7 @@ export class StrBinding {
     this.race(() => {
       // console.time('onchange');
       if (changes instanceof Array && changes.length > 0) {
-        const str = this.str;
+        const str = this.str();
         let applyChanges = true;
         if (verify) {
           let view = this.view;
@@ -217,7 +219,7 @@ export class StrBinding {
     editor.onchange = this.onchange;
     editor.onselection = () => this.saveSelection();
     if (polling) this.pollChanges();
-    this._s = this.str.api.onChange.listen(this.onModelChange);
+    this._s = this.str().api.onChange.listen(this.onModelChange);
   };
 
   public readonly unbind = () => {
