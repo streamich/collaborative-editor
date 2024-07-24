@@ -16,7 +16,7 @@ const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) =>
     if (!inputRef.current) return;
     const input = inputRef.current;
     const editor = new Facade(input);
-    const binding = new StrBinding(model.api.str([]), editor);
+    const binding = new StrBinding(() => model.api.str([]), editor);
     binding.bind(true);
     return () => {
       binding.unbind();
