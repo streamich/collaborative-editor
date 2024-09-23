@@ -2,6 +2,8 @@ import {invokeFirstOnly} from './util';
 import {Selection} from './Selection';
 import {applyChange} from './util';
 import type {CollaborativeStr, EditorFacade, SimpleChange} from './types';
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const diff = require('fast-diff');
 
 const enum DIFF_CHANGE_TYPE {
@@ -52,8 +54,8 @@ export class StrBinding {
     selection.dir = selectionDirection;
     selection.ts = now;
     selection.tick = tick;
-    selection.startId = typeof selectionStart === 'number' ? str.findId((selectionStart ?? 0) - 1) ?? null : null;
-    selection.endId = typeof selectionEnd === 'number' ? str.findId((selectionEnd ?? 0) - 1) ?? null : null;
+    selection.startId = typeof selectionStart === 'number' ? (str.findId((selectionStart ?? 0) - 1) ?? null) : null;
+    selection.endId = typeof selectionEnd === 'number' ? (str.findId((selectionEnd ?? 0) - 1) ?? null) : null;
   }
 
   // ----------------------------------------------------- Model-to-Editor sync
@@ -111,7 +113,7 @@ export class StrBinding {
     const value = this.editor.get();
     if (value === view) return;
     const selection = this.selection;
-    const caretPos: number | undefined = selection.start === selection.end ? selection.start ?? undefined : undefined;
+    const caretPos: number | undefined = selection.start === selection.end ? (selection.start ?? undefined) : undefined;
     const changes = diff(view, value, caretPos);
     const changeLen = changes.length;
     const str = this.str();
