@@ -42,6 +42,7 @@ export class StrBinding {
   protected saveSelection() {
     const {editor, selection} = this;
     const str = this.str();
+    if (!str) return;
     const [selectionStart, selectionEnd, selectionDirection] = editor.getSelection?.() || [-1, -1, 0];
     const {start, end} = selection;
     const now = Date.now();
@@ -63,7 +64,8 @@ export class StrBinding {
   public syncFromModel() {
     const editor = this.editor;
     const str = this.str();
-    const view = (this.view = str.view());
+    if (!str) return;
+    const view = <string | undefined>(this.view = str.view()) || '';
     if (editor.ins && editor.del) {
       const editorText = editor.get();
       if (view === editorText) return;
@@ -117,6 +119,7 @@ export class StrBinding {
     const changes = diff(view, value, caretPos);
     const changeLen = changes.length;
     const str = this.str();
+    if (!str) return;
     str.api.transaction(() => {
       let pos: number = 0;
       for (let i = 0; i < changeLen; i++) {
@@ -150,6 +153,7 @@ export class StrBinding {
       // console.time('onchange');
       if (changes instanceof Array && changes.length > 0) {
         const str = this.str();
+        if (!str) return;
         let applyChanges = true;
         if (verify) {
           let view = this.view;
