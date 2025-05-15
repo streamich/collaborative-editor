@@ -1,4 +1,4 @@
-import {Selection} from './Selection';
+import type {Selection} from './Selection';
 import type {EditorFacade, SimpleChange} from './types';
 
 export class InputFacade0 implements EditorFacade {
@@ -108,10 +108,6 @@ export class InputFacade3 extends InputFacade2 {
       }
     }
     this.onchange!();
-  }
-
-  constructor(protected readonly input: HTMLInputElement | HTMLTextAreaElement) {
-    super(input);
   }
 }
 

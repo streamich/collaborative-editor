@@ -2,10 +2,10 @@ import * as React from 'react';
 import {JsonPatchStore} from 'json-joy/lib/json-crdt/json-patch/JsonPatchStore';
 import {StrBinding} from '../StrBinding';
 import {InputFacade0, InputFacade1, InputFacade2, InputFacade3, InputFacade4} from '../InputFacade';
-import type {Meta, StoryObj} from '@storybook/react';
 import {model0} from '../__tests__/fixtures';
 import {StoreStrFacade} from './StoreStrFacade';
 import {ReplicatedStr} from './ReplicatedStr';
+import type {Meta, StoryObj} from '@storybook/react';
 
 const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) => {
   const inputRef = React.useRef<HTMLInputElement | HTMLTextAreaElement>(null);
@@ -13,7 +13,7 @@ const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) =>
     const model = model0.clone();
     // const model = log3.end.clone();
     return [model, model.clone()];
-  }, [1]);
+  }, []);
   React.useSyncExternalStore(model.api.subscribe, () => model.tick);
   React.useEffect(() => {
     if (!inputRef.current) return;
@@ -27,13 +27,14 @@ const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) =>
     return () => {
       binding.unbind();
     };
-  }, [model]);
+  }, [model, Facade]);
 
   return (
     <div>
       {textarea ? <textarea ref={inputRef as any} /> : <input ref={inputRef as any} type="text" />}
       <div>
         <button
+          type={'button'}
           onClick={() => {
             const input = inputRef.current;
             if (!input) return;
@@ -45,6 +46,7 @@ const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) =>
       </div>
       <div>
         <button
+          type={'button'}
           onClick={() => {
             const str = model.api.str([]);
             str.ins(str.view().length, '?');
@@ -55,6 +57,7 @@ const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) =>
       </div>
       <div>
         <button
+          type={'button'}
           onClick={() => {
             setTimeout(() => {
               const str = model.api.str([]);
@@ -67,6 +70,7 @@ const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) =>
       </div>
       <div>
         <button
+          type={'button'}
           onClick={() => {
             setTimeout(() => {
               const str = model.api.str([]);
@@ -79,6 +83,7 @@ const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) =>
       </div>
       <div>
         <button
+          type={'button'}
           onClick={() => {
             setTimeout(() => {
               model.reset(clone);
