@@ -1,4 +1,4 @@
-import {Selection} from './Selection';
+import type {Selection} from './Selection';
 import type {EditorFacade, SimpleChange} from './types';
 
 export class InputFacade0 implements EditorFacade {
