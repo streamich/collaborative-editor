@@ -7,7 +7,7 @@ import type {CollaborativeStr, EditorFacade, SimpleChange} from './types';
 const enum PATCH_OP_TYPE {
   DEL = -1,
   EQL = 0,
-  INS = 1
+  INS = 1,
 }
 
 export class StrBinding {
