@@ -109,10 +109,6 @@ export class InputFacade3 extends InputFacade2 {
     }
     this.onchange!();
   }
-
-  constructor(protected readonly input: HTMLInputElement | HTMLTextAreaElement) {
-    super(input);
-  }
 }
 
 export class InputFacade4 extends InputFacade3 {

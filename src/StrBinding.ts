@@ -1,15 +1,13 @@
 import {invokeFirstOnly} from './util';
 import {Selection} from './Selection';
 import {applyChange} from './util';
+import {diff, diffEdit} from 'json-joy/lib/util/diff/str';
 import type {CollaborativeStr, EditorFacade, SimpleChange} from './types';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const diff = require('fast-diff');
-
-const enum DIFF_CHANGE_TYPE {
-  DELETE = -1,
-  EQUAL = 0,
-  INSERT = 1,
+const enum PATCH_OP_TYPE {
+  DEL = -1,
+  EQL = 0,
+  INS = 1
 }
 
 export class StrBinding {
@@ -77,14 +75,14 @@ export class StrBinding {
         const change = changes[i];
         const [type, text] = change;
         const len = text.length;
-        switch (type) {
-          case DIFF_CHANGE_TYPE.DELETE:
+        switch (type as unknown as PATCH_OP_TYPE) {
+          case PATCH_OP_TYPE.DEL:
             editor.del(pos, len);
             break;
-          case DIFF_CHANGE_TYPE.EQUAL:
+          case PATCH_OP_TYPE.EQL:
             pos += len;
             break;
-          case DIFF_CHANGE_TYPE.INSERT:
+          case PATCH_OP_TYPE.INS:
             editor.ins(pos, text);
             pos += len;
             break;
@@ -116,7 +114,7 @@ export class StrBinding {
     if (value === view) return;
     const selection = this.selection;
     const caretPos: number | undefined = selection.start === selection.end ? (selection.start ?? undefined) : undefined;
-    const changes = diff(view, value, caretPos);
+    const changes = diffEdit(view, value, caretPos || 0);
     const changeLen = changes.length;
     const str = this.str();
     if (!str) return;
@@ -125,17 +123,17 @@ export class StrBinding {
       for (let i = 0; i < changeLen; i++) {
         const change = changes[i];
         const [type, text] = change;
-        switch (type) {
-          case DIFF_CHANGE_TYPE.DELETE: {
+        switch (type as unknown as PATCH_OP_TYPE) {
+          case PATCH_OP_TYPE.DEL: {
             view = applyChange(view, pos, text.length, '');
             str.del(pos, text.length);
             break;
           }
-          case DIFF_CHANGE_TYPE.EQUAL: {
+          case PATCH_OP_TYPE.EQL: {
             pos += text.length;
             break;
           }
-          case DIFF_CHANGE_TYPE.INSERT: {
+          case PATCH_OP_TYPE.INS: {
             view = applyChange(view, pos, 0, text);
             str.ins(pos, text);
             pos += text.length;

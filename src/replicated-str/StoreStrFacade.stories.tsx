@@ -2,10 +2,10 @@ import * as React from 'react';
 import {JsonPatchStore} from 'json-joy/lib/json-crdt/json-patch/JsonPatchStore';
 import {StrBinding} from '../StrBinding';
 import {InputFacade0, InputFacade1, InputFacade2, InputFacade3, InputFacade4} from '../InputFacade';
-import type {Meta, StoryObj} from '@storybook/react';
 import {model0} from '../__tests__/fixtures';
 import {StoreStrFacade} from './StoreStrFacade';
 import {ReplicatedStr} from './ReplicatedStr';
+import type {Meta, StoryObj} from '@storybook/react';
 
 const Demo: React.FC<{textarea: boolean; Facade: any}> = ({textarea, Facade}) => {
   const inputRef = React.useRef<HTMLInputElement | HTMLTextAreaElement>(null);
