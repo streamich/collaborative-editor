@@ -3029,13 +3029,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prop-types@npm:*":
-  version: 15.7.14
-  resolution: "@types/prop-types@npm:15.7.14"
-  checksum: 10c0/1ec775160bfab90b67a782d735952158c7e702ca4502968aa82565bd8e452c2de8601c8dfe349733073c31179116cf7340710160d3836aa8a1ef76d1532893b1
-  languageName: node
-  linkType: hard
-
 "@types/qs@npm:*, @types/qs@npm:^6.9.5":
   version: 6.14.0
   resolution: "@types/qs@npm:6.14.0"
@@ -3050,13 +3043,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.3.8":
-  version: 18.3.23
-  resolution: "@types/react@npm:18.3.23"
+"@types/react@npm:^19.0.0":
+  version: 19.1.6
+  resolution: "@types/react@npm:19.1.6"
   dependencies:
-    "@types/prop-types": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10c0/49331800b76572eb2992a5c44801dbf8c612a5f99c8f4e4200f06c7de6f3a6e9455c661784a6c5469df96fa45622cb4a9d0982c44e6a0d5719be5f2ef1f545ed
+  checksum: 10c0/8b10b198e28997b3c57559750f8bcf5ae7b33c554b16b6f4fe2ece1d4de6a2fc8cb53e7effe08ec9cb939d2f479eb97c5e08aac2cf83b10a90164fe451cc8ea2
   languageName: node
   linkType: hard
 
@@ -4187,7 +4179,7 @@ __metadata:
     "@storybook/react-webpack5": "npm:^8.6.12"
     "@storybook/test": "npm:^8.6.12"
     "@types/jest": "npm:^29.5.13"
-    "@types/react": "npm:^18.3.8"
+    "@types/react": "npm:^19.0.0"
     "@typescript-eslint/eslint-plugin": "npm:^8.6.0"
     "@typescript-eslint/parser": "npm:^8.6.0"
     ajv-keywords: "npm:^5.1.0"
